@@ -13,7 +13,7 @@ Feature diamond(int rows, int)
 {
     // the offset starts at rows
     // the rows are (i+1)*2 -1 wide
-    Feature::EdgeList edges;
+    EdgeList edges;
     for (auto i = 0; i < rows / 2; i++)
     {
         edges.push_back({rows/2-i-1,(i+1)*2-1});
@@ -40,7 +40,7 @@ Feature octogon(int side, int)
     // segment 2 has identitical sides offset 0 length side + 2*(side-1)
     // segment 3 has side -1 seconds, inverse of section 1
 
-    Feature::EdgeList edges;
+    EdgeList edges;
     side /= 3;
     if (side < 2) side = 2;
 
@@ -63,7 +63,7 @@ Feature octogon(int side, int)
 
 Feature rectangle(int width, int height)
 {
-    Feature::EdgeList edges;
+    EdgeList edges;
     for (auto i = 0; i < height; i++)
     {
         edges.push_back({0,width});
@@ -73,7 +73,7 @@ Feature rectangle(int width, int height)
 
 Feature trapezium(int top, int height)
 {
-    Feature::EdgeList edges;
+    EdgeList edges;
     for (auto i = 0; i < height; i++)
     {
         edges.push_back({top-1-i,top+i*2});
@@ -83,7 +83,7 @@ Feature trapezium(int top, int height)
 
 Feature triangle(int rows, int)
 {
-    Feature::EdgeList edges;
+    EdgeList edges;
     for (auto i = 0; i < rows; i++)
     {
         edges.push_back({rows-i-1,(i+1)*2-1});

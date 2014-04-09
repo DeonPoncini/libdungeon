@@ -6,8 +6,6 @@
 namespace dungeon
 {
 
-typedef std::pair<int,int> Point;
-
 /**
  * A feature can be placed in the world map in 16 possible ways
  * From each location that the feature can be placed, the feature can be
