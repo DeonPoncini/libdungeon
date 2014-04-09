@@ -20,16 +20,21 @@ typedef std::pair<int,int> Point;
  * at their corners
  *
  *
- *
  * A: Adjuster that calculates random offsets for the shapes
  * I: Iterator that counts either forwards or backwards over
  *    the rows of the feature
- * C: Coordinate that converts feature coordinates to
- *    world tile space coordinates offset from the location
+ * Y: Return the world space Y coordinate for the the position of the first
+ *    row of the feature
+ * X: Return the world space X coordinate for the start of each row in the
+ *    feature
  * O: Orientation computes the rotation of the shape
  *
  */
-template <typename A, typename I, typename C, typename O>
+template <typename A,
+         typename I,
+         template<typename> class Y,
+         template<typename> class X,
+         template<typename, typename> class O>
 class FeatureIterator
 {
 public:
@@ -42,94 +47,195 @@ public:
     Point operator()(int x, int y) const;
 
 private:
-    int startX() const;
-    int startY(int x) const;
+    int startY() const;
+    int startX(int y) const;
 
     A adjuster;
     I iterator;
-    C coordinates;
-    O orientation;
+    Y<A> y;
+    X<A> x;
+    O<X<A>,Y<A>> orientation;
 };
 
-template <typename A, typename I, typename C, typename O>
-FeatureIterator<A,I,C,O>::FeatureIterator(
+template <typename A,
+         typename I,
+         template<typename> class Y,
+         template<typename> class X,
+         template<typename, typename> class O>
+FeatureIterator<A,I,Y,X,O>::FeatureIterator(
         const Feature& feature, const Point& location) :
         adjuster(feature),
         iterator(feature.height()),
-        coordinates(feature,location,adjuster),
-        orientation(coordinates)
+        y(feature,location,adjuster),
+        x(feature,location,adjuster),
+        orientation(feature,x,y)
 {
 }
 
-template <typename A, typename I, typename C, typename O>
-int FeatureIterator<A,I,C,O>::begin() const
+template <typename A,
+         typename I,
+         template<typename> class Y,
+         template<typename> class X,
+         template<typename, typename> class O>
+int FeatureIterator<A,I,Y,X,O>::begin() const
 {
     return iterator.begin();
 }
 
-template <typename A, typename I, typename C, typename O>
-int FeatureIterator<A,I,C,O>::next()
+template <typename A,
+         typename I,
+         template<typename> class Y,
+         template<typename> class X,
+         template<typename, typename> class O>
+int FeatureIterator<A,I,Y,X,O>::next()
 {
     return iterator.next();
 }
 
-template <typename A, typename I, typename C, typename O>
-int FeatureIterator<A,I,C,O>::end() const
+template <typename A,
+         typename I,
+         template<typename> class Y,
+         template<typename> class X,
+         template<typename, typename> class O>
+int FeatureIterator<A,I,Y,X,O>::end() const
 {
     return iterator.end();
 }
 
-template <typename A, typename I, typename C, typename O>
-Point FeatureIterator<A,I,C,O>::operator()(int x, int y) const
+template <typename A,
+         typename I,
+         template<typename> class Y,
+         template<typename> class X,
+         template<typename, typename> class O>
+Point FeatureIterator<A,I,Y,X,O>::operator()(int x, int y) const
 {
     return orientation(x,y);
 }
 
-class RowAdjuster
+template <typename A,
+         typename I,
+         template<typename> class Y,
+         template<typename> class X,
+         template<typename, typename> class O>
+int FeatureIterator<A,I,Y,X,O>::startY() const
 {
-public:
-    RowAdjuster(const Feature& feature);
-
-    inline int start() const { return mStart; }
-    inline int offset() const { return mOffset; }
-
-private:
-    int mStart;
-    int mOffset;
-};
-
-
-class ForwardIterator
-{
-public:
-    ForwardIterator(int height);
-
-    int begin() const;
-    int next();
-    int end() const;
-
-private:
-    const int mHeight;
-    mutable int mCurrent;
-};
-
-class BackwardIterator
-{
-public:
-    BackwardIterator(int height);
-
-    int begin() const;
-    int next();
-    int end() const;
-
-private:
-    const int mHeight;
-    mutable int mCurrent;
-};
-
-
-
+    return Y<A>();
 }
 
+template <typename A,
+         typename I,
+         template<typename> class Y,
+         template<typename> class X,
+         template<typename, typename> class O>
+int FeatureIterator<A,I,Y,X,O>::startX(int y) const
+{
+    return X<A>(y);
+}
+
+// forward declarations
+
+// adjusters
+class AForward;
+class AMirror;
+class ATranspose;
+class AMirrorTranspose;
+
+// iterators
+class IForward;
+class IBackward;
+
+// Y transforms
+template <typename A> class YForwardShift;
+template <typename A> class YTranspose;
+template <typename A> class YMirrorTranspose;
+template <typename A> class YMirror;
+template <typename A> class YTransposeShift;
+template <typename A> class YMirrorTransposeShift;
+template <typename A> class YForward;
+
+// X transforms
+template <typename A> class XForward;
+template <typename A> class XMirror;
+template <typename A> class XMirrorTranspose;
+template <typename A> class XTranspose;
+template <typename A> class XForwardShift;
+template <typename A> class XTransposeShift;
+template <typename A> class XMirrorShift;
+
+// orientations
+template <typename X, typename Y> class OForward;
+template <typename X, typename Y> class OTranspose;
+template <typename X, typename Y> class OMirror;
+template <typename X, typename Y> class OMirrorTranspose;
+
+// typedefs
+/*
+ * Starting from the selected location with a given feature there
+ * are 16 possible ways we can iterate over the shape in world space
+ * to try and make it fit. We can orient the shape in four ways:
+ * F - Forward - with rows running left to right top to bottom
+ * T - Transpose - the shape turned clockwise 90 degrees
+ * M - Mirror - the shape turned clockwise 180 degrees
+ * Z - Transpose Mirror - the shape turned clockwise 270 degrees
+ *
+ * Then we can put this shape in four places around our location
+ * R - To the right
+ * L - To the left
+ * A - Above the point
+ * B - Below the point
+ *
+ * We express our iterators as <place><rotation> so RF is to the right
+ * and forward, the normal way we would think of laying out a feature
+ */
+
+// to the right
+typedef FeatureIterator<
+        AForward, IForward, YForwardShift, XForward, OForward>      RF;
+typedef FeatureIterator<
+        AMirror, IBackward, YForwardShift, XForward, OMirror>       RM;
+typedef FeatureIterator<
+        AMirrorTranspose, IBackward, YTranspose,
+        XMirrorTranspose, OMirrorTranspose>                         RT;
+typedef FeatureIterator<
+        ATranspose, IForward, YTranspose,
+        XMirrorTranspose, OTranspose>                               RZ;
+
+// to the left
+typedef FeatureIterator<
+        AForward, IForward, YForwardShift, XForwardShift, OForward> LF;
+typedef FeatureIterator<
+        AMirror, IBackward, YForwardShift, XMirrorShift, OMirror>   LM;
+typedef FeatureIterator<
+        ATranspose, IBackward, YMirrorTranspose,
+        XMirrorTranspose, OMirrorTranspose>                         LT;
+typedef FeatureIterator<
+        AMirrorTranspose, IForward, YMirrorTranspose,
+        XMirrorTranspose, OTranspose>                               LZ;
+
+// above
+typedef FeatureIterator<
+        AMirrorTranspose, IForward, YMirror, XMirror, OForward>     AF;
+typedef FeatureIterator<
+        ATranspose, IBackward, YMirror, XMirror, OMirror>           AM;
+typedef FeatureIterator<
+        AMirror, IBackward, YTransposeShift,
+        XTransposeShift, OMirrorTranspose>                          AT;
+typedef FeatureIterator<
+        AMirror, IForward, YMirrorTransposeShift,
+        XTransposeShift, OTranspose>                                AZ;
+
+// below
+typedef FeatureIterator<
+        ATranspose, IForward, YForward, XMirror, OForward>          BF;
+typedef FeatureIterator<
+        AMirrorTranspose, IBackward, YForward, XMirror, OMirror>    BM;
+typedef FeatureIterator<
+        AMirror, IBackward, YTransposeShift,
+        XTranspose, OMirrorTranspose>                               BT;
+typedef FeatureIterator<
+        AMirror, IForward, YMirrorTransposeShift,
+        XTranspose, OTranspose>                                     BZ;
+
+}
 
 #endif
