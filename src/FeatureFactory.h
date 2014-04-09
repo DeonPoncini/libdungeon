@@ -2,8 +2,7 @@
 #define DUNGEON_FEATUREFACTORY_H
 
 #include <functional>
-#include <string>
-#include <unordered_map>
+#include <vector>
 
 namespace dungeon
 {
@@ -15,12 +14,11 @@ typedef std::function<Feature(int,int)> FeatureFunction;
 class FeatureFactory
 {
 public:
-    void addFeature(std::string name, FeatureFunction function);
-    Feature create(const std::string& name, int width, int height) const;
+    void addFeature(FeatureFunction function);
     Feature createRandom(int minW, int maxW, int minH, int maxH) const;
 
 private:
-    std::unordered_map<std::string,FeatureFunction> mFeatures;
+    std::vector<FeatureFunction> mFeatures;
 };
 
 }
