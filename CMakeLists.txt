@@ -14,6 +14,7 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 ################################
 file(GLOB_RECURSE INCLUDES include/*.h)
 file(GLOB_RECURSE SRC src/*.cpp)
+file(GLOB_RECURSE TEST test/*.cpp)
 
 include_directories(include)
 
@@ -24,3 +25,9 @@ include_directories(include)
 add_library(dungeon SHARED
     ${SRC}
     ${INCLUDES})
+
+
+add_executable(dungeon-test
+    ${TEST})
+
+target_link_libraries(dungeon-test dungeon)
