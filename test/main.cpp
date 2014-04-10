@@ -146,8 +146,8 @@ int main()
     std::cout << "Testing Below Mirror" << std::endl;
     {
         dungeon::TileMap tileMap(width,height);
-        dungeon::BF bf(triangle,p);
-        tileMap.insert(&triangle,bf);
+        dungeon::BM bm(triangle,p);
+        tileMap.insert(&triangle,bm);
         print(tileMap,p);
     }
 
