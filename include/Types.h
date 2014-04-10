@@ -8,7 +8,7 @@ namespace dungeon
 {
 typedef std::pair<int,int> Edge;
 typedef std::vector<Edge> EdgeList;
-typedef std::pair<unsigned,unsigned> Point;
+typedef std::pair<int,int> Point;
 }
 
 #endif

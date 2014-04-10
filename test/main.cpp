@@ -3,17 +3,20 @@
 #include "FeatureIterator.h"
 #include "Features.h"
 #include "TileMap.h"
+#include "Generator.h"
+#include "DungeonOptions.h"
 
 void print(const dungeon::TileMap& tileMap, const dungeon::Point& p)
 {
     // print the map out
     auto width = tileMap.width();
     auto height = tileMap.height();
-    for (auto y = 0; y < height; y++)
+    for (auto y = 0U; y < height; y++)
     {
-        for (auto x = 0; x < width; x++)
+        for (auto x = 0U; x < width; x++)
         {
-            if (x == p.first && y == p.second)
+            if (x == static_cast<unsigned>(p.first) &&
+                y == static_cast<unsigned>(p.second))
             {
                 std::cout << "*";
                 continue;
@@ -34,6 +37,19 @@ void print(const dungeon::TileMap& tileMap, const dungeon::Point& p)
 
 int main()
 {
+    dungeon::DungeonOptions options;
+//    options.addFeature(dungeon::corridor);
+ //   options.addFeature(dungeon::diamond);
+ //   options.addFeature(dungeon::octogon);
+    options.addFeature(dungeon::rectangle);
+//    options.addFeature(dungeon::trapezium);
+
+    // generate the dungeon
+    auto tileMap = dungeon::generate(options);
+    print(tileMap,{0,0});
+
+
+#if 0
     auto width = 20;
     auto height = 20;
     dungeon::Point p{10,10};
@@ -166,6 +182,7 @@ int main()
         tileMap.insert(&triangle,bz);
         print(tileMap,p);
     }
+#endif
 
     return 0;
 }

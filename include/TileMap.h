@@ -1,6 +1,5 @@
 #ifndef DUNGEON_TILEMAP_H
 #define DUNGEON_TILEMAP_H
-
 #include "Types.h"
 #include "Feature.h"
 
@@ -16,6 +15,7 @@ public:
 
     template <typename FI>
     bool insert(Feature* feature, FI iterator);
+    bool clearAround(Point location) const;
 
     inline unsigned width() const { return mWidth; }
     inline unsigned height() const { return mHeight; }
@@ -28,8 +28,8 @@ private:
 
     std::vector<Feature*> mTiles;
 
-    bool clearAround(Point location) const;
     bool clear(Point location) const;
+    bool bounds(Point location) const;
 
     template <typename FI>
     bool clear(Feature* feature, FI iterator);
