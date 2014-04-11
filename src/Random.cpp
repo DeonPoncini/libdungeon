@@ -6,12 +6,26 @@
 namespace dungeon
 {
 
-int randomRange(int start, int end)
+std::mt19937& generator()
 {
     static std::random_device device;
     static std::mt19937 gen(device());
+    return gen;
+}
+
+int randomRange(int start, int end)
+{
     std::uniform_int_distribution<> dist(start,end);
-    return dist(gen);
+    return dist(generator());
+}
+
+int weightedRoll(const std::vector<double>& intervals,
+        const std::vector<double>& weights)
+{
+    std::piecewise_constant_distribution<double> dist(
+            std::begin(intervals),std::end(intervals),
+            std::begin(weights));
+    return dist(generator());
 }
 
 Point randomEdge(const Feature& feature)

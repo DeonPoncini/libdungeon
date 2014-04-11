@@ -11,11 +11,11 @@ class TileMap
 public:
     TileMap(unsigned width, unsigned height);
 
-    Feature* at(Point location) const;
+    const Feature* at(Point location) const;
 
     template <typename FI>
-    bool insert(Feature* feature, FI iterator);
-    bool clearAround(Point location) const;
+    bool insert(const Feature* feature, FI iterator);
+    bool clear(Point location) const;
 
     inline unsigned width() const { return mWidth; }
     inline unsigned height() const { return mHeight; }
@@ -26,21 +26,19 @@ private:
     unsigned mSize;
     unsigned mStride;
 
-    std::vector<Feature*> mTiles;
+    std::vector<const Feature*> mTiles;
 
-    bool clear(Point location) const;
     bool bounds(Point location) const;
-
     template <typename FI>
-    bool clear(Feature* feature, FI iterator);
+    bool clear(const Feature* feature, FI iterator);
 
     int index(Point location) const;
-    void set(Point location, Feature* feature);
+    void set(Point location, const Feature* feature);
 
 };
 
 template <typename FI>
-bool TileMap::insert(Feature* feature, FI iterator)
+bool TileMap::insert(const Feature* feature, FI iterator)
 {
     if (feature == nullptr)
     {
@@ -65,14 +63,14 @@ bool TileMap::insert(Feature* feature, FI iterator)
 }
 
 template <typename FI>
-bool TileMap::clear(Feature* feature, FI iterator)
+bool TileMap::clear(const Feature* feature, FI iterator)
 {
     for (auto y = iterator.begin(); y != iterator.end(); y = iterator.next())
     {
         auto width = feature->width(y);
         for (auto x = 0; x < width; x++)
         {
-            if (!clearAround({x,y}))
+            if (!clear(iterator(x,y)))
             {
                 return false;
             }

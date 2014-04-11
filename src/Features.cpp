@@ -20,7 +20,7 @@ Feature diamond(int rows, int)
     }
 
     // bottom half of diamond
-    for (auto i = 0; i < rows / 2 - 1; i++)
+    for (auto i = rows / 2 - 1; i >= 0; i--)
     {
         edges.push_back({rows / 2 - i - 1,(i+1)*2-1});
     }

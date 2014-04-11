@@ -8,10 +8,25 @@
 
 #include <vector>
 
-#include <iostream>
-
 namespace dungeon
 {
+
+template <typename R>
+bool insert(TileMap& tileMap, const Feature& feature,
+        const Point& location,
+        std::vector<Feature>& features,
+        std::vector<std::function<Point(int,int)>>& transforms)
+{
+    R r(feature,location);
+
+    if(tileMap.insert<R>(&feature,r))
+    {
+        features.push_back(feature);
+        transforms.push_back([=](int x, int y) { return r(x,y); });
+        return true;
+    }
+    return false;
+}
 
 TileMap generate(const DungeonOptions& options)
 {
@@ -32,7 +47,7 @@ TileMap generate(const DungeonOptions& options)
     tileMap.insert(&rect,r);
 
     // iterate a large number of times
-    for (auto i = 0; i < 10; i++)
+    for (auto i = 0U; i < options.mIterations; i++)
     {
         // get a random feature from the list
         auto r = randomRange(0,features.size() - 1);
@@ -40,39 +55,35 @@ TileMap generate(const DungeonOptions& options)
 
         // get a random edge of this feature
         auto location_modelspace = randomEdge(feature);
-        std::cout << "Modelspace: " << location_modelspace.first <<
-            ", " << location_modelspace.second << std::endl;
         // transform the location
         auto location = transforms[r](location_modelspace.first,
                 location_modelspace.second);
-        std::cout << "Location: " << location.first <<
-            ", " << location.second << std::endl;
 
         // we want to be 2 away so we have a single tile door
-        Point right{location.first+2,location.second};
-        Point left{location.first-2,location.second};
-        Point above{location.first,location.second+2};
-        Point below{location.first,location.second-2};
+        Point right{location.first+1,location.second};
+        Point left{location.first-1,location.second};
+        Point above{location.first,location.second+1};
+        Point below{location.first,location.second-1};
         Point place;
 
         // check around this item
         // check to the right
-        if (tileMap.clearAround(right))
+        if (tileMap.clear(right))
         {
             // we can go right
             place = right;
         }
-        else if(tileMap.clearAround(left))
+        else if (tileMap.clear(left))
         {
             // we can go left
             place = left;
         }
-        else if(tileMap.clearAround(above))
+        else if (tileMap.clear(above))
         {
             // we can go above
             place = above;
         }
-        else if(tileMap.clearAround(below))
+        else if (tileMap.clear(below))
         {
             // we can go below
             place = below;
@@ -86,35 +97,21 @@ TileMap generate(const DungeonOptions& options)
         // create a new feature
         auto feature_new = options.createRandom();
         // try every orientation
-        {
-            std::cout << "Place: " << place.first << ", " << place.second
-                << std::endl;
-            RF r(feature_new,place);
-
-            if(tileMap.insert(&feature_new,r))
-            {
-                features.push_back(feature_new);
-                transforms.push_back([=](int x, int y) { return r(x,y); });
-            }
-        }
-#if 0
-        if(tileMap.insert(&feature,RM(feature,place))) continue;
-        if(tileMap.insert(&feature,RT(feature,place))) continue;
-        if(tileMap.insert(&feature,RZ(feature,place))) continue;
-        if(tileMap.insert(&feature,LF(feature,place))) continue;
-        if(tileMap.insert(&feature,LM(feature,place))) continue;
-        if(tileMap.insert(&feature,LT(feature,place))) continue;
-        if(tileMap.insert(&feature,LZ(feature,place))) continue;
-        if(tileMap.insert(&feature,AF(feature,place))) continue;
-        if(tileMap.insert(&feature,AM(feature,place))) continue;
-        if(tileMap.insert(&feature,AT(feature,place))) continue;
-        if(tileMap.insert(&feature,AZ(feature,place))) continue;
-        if(tileMap.insert(&feature,BF(feature,place))) continue;
-        if(tileMap.insert(&feature,BM(feature,place))) continue;
-        if(tileMap.insert(&feature,BT(feature,place))) continue;
-        if(tileMap.insert(&feature,BZ(feature,place))) continue;
-#endif
-
+        if(insert<RF>(tileMap,feature_new,place,features,transforms)) continue;
+        if(insert<RM>(tileMap,feature_new,place,features,transforms)) continue;
+        if(insert<RT>(tileMap,feature_new,place,features,transforms)) continue;
+        if(insert<LF>(tileMap,feature_new,place,features,transforms)) continue;
+        if(insert<LM>(tileMap,feature_new,place,features,transforms)) continue;
+        if(insert<LT>(tileMap,feature_new,place,features,transforms)) continue;
+        if(insert<LZ>(tileMap,feature_new,place,features,transforms)) continue;
+        if(insert<AF>(tileMap,feature_new,place,features,transforms)) continue;
+        if(insert<AM>(tileMap,feature_new,place,features,transforms)) continue;
+        if(insert<AT>(tileMap,feature_new,place,features,transforms)) continue;
+        if(insert<AZ>(tileMap,feature_new,place,features,transforms)) continue;
+        if(insert<BF>(tileMap,feature_new,place,features,transforms)) continue;
+        if(insert<BM>(tileMap,feature_new,place,features,transforms)) continue;
+        if(insert<BT>(tileMap,feature_new,place,features,transforms)) continue;
+        if(insert<BZ>(tileMap,feature_new,place,features,transforms)) continue;
     }
     return tileMap;
 }

@@ -649,7 +649,7 @@ YForward<A>::YForward(const Feature& feature,
 template <typename A>
 XForward<A>::XForward(const Feature& feature,
         const Point& location, const A& adjuster) :
-    mF([&](int y){
+    mF([=](int y){
             return location.first + feature.offset(y) - adjuster.offset();})
 {
 }
@@ -657,7 +657,7 @@ XForward<A>::XForward(const Feature& feature,
 template <typename A>
 XMirror<A>::XMirror(const Feature& feature,
         const Point& location, const A& adjuster) :
-    mF([&](int y){
+    mF([=](int y){
             return location.first + feature.offset(y) + adjuster.offset();})
 {
 }
@@ -665,7 +665,7 @@ XMirror<A>::XMirror(const Feature& feature,
 template <typename A>
 XMirrorTranspose<A>::XMirrorTranspose(const Feature& feature,
         const Point& location, const A& adjuster) :
-    mF([&](int y){
+    mF([=](int y){
             return location.second + feature.offset(y) + adjuster.offset();})
 {
 }
@@ -673,7 +673,7 @@ XMirrorTranspose<A>::XMirrorTranspose(const Feature& feature,
 template <typename A>
 XTranspose<A>::XTranspose(const Feature& feature,
         const Point& location, const A& adjuster) :
-    mF([&](int y){
+    mF([=](int y){
             return location.second + feature.offset(y) - adjuster.offset();})
 {
 }
@@ -681,7 +681,7 @@ XTranspose<A>::XTranspose(const Feature& feature,
 template <typename A>
 XForwardShift<A>::XForwardShift(const Feature& feature,
         const Point& location, const A& adjuster) :
-    mF([&](int y){
+    mF([=](int y){
             return location.first + feature.offset(y) - adjuster.offset()
             - (feature.width(adjuster.start()) - 1);})
 {
@@ -690,7 +690,7 @@ XForwardShift<A>::XForwardShift(const Feature& feature,
 template <typename A>
 XTransposeShift<A>::XTransposeShift(const Feature& feature,
         const Point& location, const A& adjuster) :
-    mF([&](int y){
+    mF([=](int y){
             return location.second -
             (feature.width(feature.height() - 1 - adjuster.start()) - 1)
             + feature.offset(y) - adjuster.offset();})
@@ -700,7 +700,7 @@ XTransposeShift<A>::XTransposeShift(const Feature& feature,
 template <typename A>
 XMirrorShift<A>::XMirrorShift(const Feature& feature,
         const Point& location, const A& adjuster) :
-    mF([&](int y){
+    mF([=](int y){
             return location.first + feature.offset(y) - adjuster.offset()
             - (feature.width(feature.height() - 1 - adjuster.start()) - 1);})
 {

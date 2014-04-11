@@ -18,7 +18,7 @@ public:
     DungeonOptions();
 
     // setup
-    DungeonOptions& addFeature(FeatureFunction function);
+    DungeonOptions& addFeature(FeatureFunction function, double weight = 1.0);
 
     DungeonOptions& setSize(unsigned width, unsigned height);
 
@@ -27,12 +27,16 @@ public:
     DungeonOptions& setMinHeight(int height);
     DungeonOptions& setMaxHeight(int height);
 
+    DungeonOptions& setIterations(unsigned iterations);
+
     Feature createRandom() const;
 
 private:
     friend TileMap generate(const DungeonOptions& options);
 
     std::vector<FeatureFunction> mFeatures;
+    std::vector<double> mIntervals;
+    std::vector<double> mWeights;
 
     unsigned mWidth;
     unsigned mHeight;
@@ -41,6 +45,8 @@ private:
     int mMaxW;
     int mMinH;
     int mMaxH;
+
+    unsigned mIterations;
 };
 
 }
