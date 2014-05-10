@@ -8,6 +8,11 @@
 namespace dungeon
 {
 
+template <typename FI>
+class RowIterator;
+template <typename FI>
+class ColumnIterator;
+
 /**
  * A feature can be placed in the world map in 16 possible ways
  * From each location that the feature can be placed, the feature can be
@@ -40,21 +45,68 @@ class FeatureIterator
 public:
     FeatureIterator(const Feature& feature, const Point& location);
 
-    int begin() const;
-    int next();
-    int end() const;
+    RowIterator<FeatureIterator<A,I,Y,X,O>> begin();
+    RowIterator<FeatureIterator<A,I,Y,X,O>> end();
 
-    Point operator()(int x, int y) const;
+    const Feature* operator*() const;
+
+    Point transform(int x, int y) const;
 
 private:
+    friend class RowIterator<FeatureIterator<A,I,Y,X,O>>;
+
     int startY() const;
     int startX(int y) const;
+
+    Feature mFeature;
 
     A adjuster;
     I iterator;
     Y<A> y;
     X<A> x;
     O<X<A>,Y<A>> orientation;
+};
+
+template <typename FI>
+class RowIterator
+{
+public:
+    RowIterator(FI& fi, int pos);
+
+    ColumnIterator<FI> begin() const;
+    ColumnIterator<FI> end() const;
+
+    bool operator==(const RowIterator<FI>& rhs) const;
+    bool operator!=(const RowIterator<FI>& rhs) const;
+
+    const RowIterator<FI>& operator*() const;
+
+    RowIterator<FI>& operator++();
+    RowIterator<FI>  operator++(int);
+private:
+    friend class ColumnIterator<FI>;
+
+    FI& mFI;
+    int mPos;
+};
+
+template <typename FI>
+class ColumnIterator
+{
+public:
+    ColumnIterator(RowIterator<FI> row, int pos);
+
+    bool operator==(const ColumnIterator<FI>& rhs) const;
+    bool operator!=(const ColumnIterator<FI>& rhs) const;
+
+    Point operator*() const;
+
+    ColumnIterator<FI>& operator++();
+    ColumnIterator<FI>  operator++(int);
+
+private:
+    RowIterator<FI> mRow;
+    int mPos;
 };
 
 template <typename A,
@@ -64,11 +116,12 @@ template <typename A,
          template<typename, typename> class O>
 FeatureIterator<A,I,Y,X,O>::FeatureIterator(
         const Feature& feature, const Point& location) :
-        adjuster(feature),
-        iterator(feature.height()),
-        y(feature,location,adjuster),
-        x(feature,location,adjuster),
-        orientation(feature,x,y)
+        mFeature(feature),
+        adjuster(mFeature),
+        iterator(mFeature.height()),
+        y(mFeature,location,adjuster),
+        x(mFeature,location,adjuster),
+        orientation(mFeature,x,y)
 {
 }
 
@@ -77,9 +130,10 @@ template <typename A,
          template<typename> class Y,
          template<typename> class X,
          template<typename, typename> class O>
-int FeatureIterator<A,I,Y,X,O>::begin() const
+RowIterator<FeatureIterator<A,I,Y,X,O>>
+FeatureIterator<A,I,Y,X,O>::begin()
 {
-    return iterator.begin();
+    return RowIterator<FeatureIterator<A,I,Y,X,O>>(*this,iterator.begin());
 }
 
 template <typename A,
@@ -87,9 +141,10 @@ template <typename A,
          template<typename> class Y,
          template<typename> class X,
          template<typename, typename> class O>
-int FeatureIterator<A,I,Y,X,O>::next()
+RowIterator<FeatureIterator<A,I,Y,X,O>>
+FeatureIterator<A,I,Y,X,O>::end()
 {
-    return iterator.next();
+    return RowIterator<FeatureIterator<A,I,Y,X,O>>(*this,iterator.end());
 }
 
 template <typename A,
@@ -97,9 +152,9 @@ template <typename A,
          template<typename> class Y,
          template<typename> class X,
          template<typename, typename> class O>
-int FeatureIterator<A,I,Y,X,O>::end() const
+const Feature* FeatureIterator<A,I,Y,X,O>::operator*() const
 {
-    return iterator.end();
+    return &mFeature;
 }
 
 template <typename A,
@@ -107,7 +162,7 @@ template <typename A,
          template<typename> class Y,
          template<typename> class X,
          template<typename, typename> class O>
-Point FeatureIterator<A,I,Y,X,O>::operator()(int x, int y) const
+Point FeatureIterator<A,I,Y,X,O>::transform(int x, int y) const
 {
     return orientation(x,y);
 }
@@ -130,6 +185,98 @@ template <typename A,
 int FeatureIterator<A,I,Y,X,O>::startX(int y) const
 {
     return X<A>(y);
+}
+
+template <typename FI>
+RowIterator<FI>::RowIterator(FI& fi, int pos) :
+    mFI(fi),
+    mPos(pos)
+{
+}
+
+template <typename FI>
+ColumnIterator<FI> RowIterator<FI>::begin() const
+{
+    return ColumnIterator<FI>(*this,0);
+}
+
+template <typename FI>
+ColumnIterator<FI> RowIterator<FI>::end() const
+{
+    return ColumnIterator<FI>(*this,mFI.mFeature.width(mPos));
+}
+
+template <typename FI>
+bool RowIterator<FI>::operator==(const RowIterator<FI>& rhs) const
+{
+    return mPos == rhs.mPos;
+}
+
+template <typename FI>
+bool RowIterator<FI>::operator!=(const RowIterator<FI>& rhs) const
+{
+    return !(*this == rhs);
+}
+
+template <typename FI>
+const RowIterator<FI>& RowIterator<FI>::operator*() const
+{
+    return *this;
+}
+
+template <typename FI>
+RowIterator<FI>& RowIterator<FI>::operator++()
+{
+    mPos = mFI.iterator.next();
+    return *this;
+}
+
+template <typename FI>
+RowIterator<FI> RowIterator<FI>::operator++(int)
+{
+    auto orig = *this;
+    ++(*this);
+    return orig;
+}
+
+template <typename FI>
+ColumnIterator<FI>::ColumnIterator(RowIterator<FI> row, int pos) :
+    mRow(row),
+    mPos(pos)
+{
+}
+
+template <typename FI>
+bool ColumnIterator<FI>::operator==(const ColumnIterator<FI>& rhs) const
+{
+    return mPos == rhs.mPos;
+}
+
+template <typename FI>
+bool ColumnIterator<FI>::operator!=(const ColumnIterator<FI>& rhs) const
+{
+    return !(*this == rhs);
+}
+
+template <typename FI>
+Point ColumnIterator<FI>::operator*() const
+{
+    return mRow.mFI.transform(mPos,mRow.mPos);
+}
+
+template <typename FI>
+ColumnIterator<FI>& ColumnIterator<FI>::operator++()
+{
+    mPos++;
+    return *this;
+}
+
+template <typename FI>
+ColumnIterator<FI> ColumnIterator<FI>::operator++(int)
+{
+    auto orig = *this;
+    ++(*this);
+    return orig;
 }
 
 // forward declarations

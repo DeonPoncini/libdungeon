@@ -19,10 +19,10 @@ bool insert(TileMap& tileMap, const Feature& feature,
 {
     R r(feature,location);
 
-    if(tileMap.insert<R>(&feature,r))
+    if(tileMap.insert(r))
     {
         features.push_back(feature);
-        transforms.push_back([=](int x, int y) { return r(x,y); });
+        transforms.push_back([=](int x, int y) { return r.transform(x,y); });
         return true;
     }
     return false;
@@ -43,8 +43,8 @@ TileMap generate(const DungeonOptions& options)
     auto rect = rectangle(4,4);
     features.push_back(rect);
     RF r(rect,{width/2,height/2});
-    transforms.push_back([=](int x, int y) { return r(x,y); });
-    tileMap.insert(&rect,r);
+    transforms.push_back([=](int x, int y) { return r.transform(x,y); });
+    tileMap.insert(r);
 
     // iterate a large number of times
     for (auto i = 0U; i < options.mIterations; i++)

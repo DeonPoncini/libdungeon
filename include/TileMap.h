@@ -1,5 +1,6 @@
 #ifndef DUNGEON_TILEMAP_H
 #define DUNGEON_TILEMAP_H
+
 #include "Types.h"
 #include "Feature.h"
 
@@ -14,7 +15,7 @@ public:
     const Feature* at(Point location) const;
 
     template <typename FI>
-    bool insert(const Feature* feature, FI iterator);
+    bool insert(FI iterator);
     bool clear(Point location) const;
 
     inline unsigned width() const { return mWidth; }
@@ -29,8 +30,9 @@ private:
     std::vector<const Feature*> mTiles;
 
     bool bounds(Point location) const;
+
     template <typename FI>
-    bool clear(const Feature* feature, FI iterator);
+    bool isClear(FI iterator);
 
     int index(Point location) const;
     void set(Point location, const Feature* feature);
@@ -38,39 +40,31 @@ private:
 };
 
 template <typename FI>
-bool TileMap::insert(const Feature* feature, FI iterator)
+bool TileMap::insert(FI iterator)
 {
-    if (feature == nullptr)
+    if (!isClear(iterator))
     {
         return false;
     }
 
-    if (!clear(feature,iterator))
+    for (auto&& row : iterator)
     {
-        return false;
-    }
-
-    for (auto y = iterator.begin(); y != iterator.end(); y = iterator.next())
-    {
-        // find the length of the row
-        auto width = feature->width(y);
-        for (auto x = 0; x < width; x++)
+        for (auto&& point : row)
         {
-            set(iterator(x,y),feature);
+            set(point,*iterator);
         }
     }
     return true;
 }
 
 template <typename FI>
-bool TileMap::clear(const Feature* feature, FI iterator)
+bool TileMap::isClear(FI iterator)
 {
-    for (auto y = iterator.begin(); y != iterator.end(); y = iterator.next())
+    for (auto&& row : iterator)
     {
-        auto width = feature->width(y);
-        for (auto x = 0; x < width; x++)
+        for (auto&& point : row)
         {
-            if (!clear(iterator(x,y)))
+            if (!clear(point))
             {
                 return false;
             }

@@ -3,9 +3,6 @@
 
 #include "Types.h"
 
-#include <vector>
-#include <utility>
-
 namespace dungeon
 {
 
