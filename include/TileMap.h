@@ -16,6 +16,8 @@ public:
 
     template <typename FI>
     bool insert(FI iterator);
+    template <typename FI>
+    void forceInsert(FI iterator);
     bool clear(Point location) const;
 
     inline unsigned width() const { return mWidth; }
@@ -47,6 +49,13 @@ bool TileMap::insert(FI iterator)
         return false;
     }
 
+    forceInsert(iterator);
+    return true;
+}
+
+template <typename FI>
+void TileMap::forceInsert(FI iterator)
+{
     for (auto&& row : iterator)
     {
         for (auto&& point : row)
@@ -54,7 +63,6 @@ bool TileMap::insert(FI iterator)
             set(point,*iterator);
         }
     }
-    return true;
 }
 
 template <typename FI>

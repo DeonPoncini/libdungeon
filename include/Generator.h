@@ -5,11 +5,15 @@
 
 namespace dungeon
 {
-
 class DungeonOptions;
+namespace generate
+{
 
-TileMap generate(const DungeonOptions& options);
+TileMap classic(const DungeonOptions& options);
 
+TileMap randomCaves(const DungeonOptions& options);
+
+}
 }
 
 #endif

@@ -7,8 +7,11 @@
 #include "DungeonOptions.h"
 
 #include <vector>
+#include <cmath>
 
 namespace dungeon
+{
+namespace generate
 {
 
 template <typename R>
@@ -28,10 +31,72 @@ bool insert(TileMap& tileMap, const Feature& feature,
     return false;
 }
 
-TileMap generate(const DungeonOptions& options)
+TileMap classic(const DungeonOptions& options)
 {
-    auto width = options.mWidth;
-    auto height = options.mHeight;
+    auto width = options.width();
+    auto height = options.height();
+    auto iterations = options.iterations();
+
+    TileMap tileMap(width,height);
+
+    Point lastLocation{-1,-1};
+    for (auto i = 0U; i < iterations; i++)
+    {
+        // select a random location
+        auto x = randomRange(0,width - 1);
+        auto y = randomRange(0,height - 1);
+
+        // build a random room
+        auto feature = options.createRandom();
+        Point location(x,y);
+        RF rf(feature,location);
+        if (tileMap.insert(rf))
+        {
+            if(lastLocation.first != -1)
+            {
+                auto xlength = std::abs(location.first - lastLocation.first);
+                auto ylength = std::abs(location.second - lastLocation.second);
+                Point yStartPoint;
+                // horizontal corridor
+                if (location.first >= lastLocation.first)
+                {
+                    auto cx = corridor(xlength);
+                    LM cr(cx,location);
+                    yStartPoint = {location.first - xlength, location.second};
+                    tileMap.forceInsert(cr);
+                }
+                else
+                {
+                    auto cx = corridor(xlength);
+                    yStartPoint = {location.first + xlength, location.second};
+                    RF cr(cx,location);
+                    tileMap.forceInsert(cr);
+                }
+                // vertical corridor
+                if (location.second >= lastLocation.second)
+                {
+                    auto cy = corridor(ylength);
+                    AT cr(cy,yStartPoint);
+                    tileMap.forceInsert(cr);
+                }
+                else
+                {
+                    auto cy = corridor(ylength);
+                    BZ cr(cy,yStartPoint);
+                    tileMap.forceInsert(cr);
+                }
+            }
+            lastLocation = location;
+        }
+    }
+    return tileMap;
+}
+
+TileMap randomCaves(const DungeonOptions& options)
+{
+    auto width = options.width();
+    auto height = options.height();
+    auto iterations = options.iterations();
 
     TileMap tileMap(width,height);
     std::vector<Feature> features;
@@ -47,7 +112,7 @@ TileMap generate(const DungeonOptions& options)
     tileMap.insert(r);
 
     // iterate a large number of times
-    for (auto i = 0U; i < options.mIterations; i++)
+    for (auto i = 0U; i < iterations; i++)
     {
         // get a random feature from the list
         auto r = randomRange(0,features.size() - 1);
@@ -116,4 +181,5 @@ TileMap generate(const DungeonOptions& options)
     return tileMap;
 }
 
+}
 }

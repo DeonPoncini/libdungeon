@@ -6,7 +6,7 @@
 #include "Generator.h"
 #include "DungeonOptions.h"
 
-void print(const dungeon::TileMap& tileMap, const dungeon::Point& p)
+void print(const dungeon::TileMap& tileMap)
 {
     // print the map out
     auto width = tileMap.width();
@@ -15,12 +15,6 @@ void print(const dungeon::TileMap& tileMap, const dungeon::Point& p)
     {
         for (auto x = 0U; x < width; x++)
         {
-            if (x == static_cast<unsigned>(p.first) &&
-                y == static_cast<unsigned>(p.second))
-            {
-                std::cout << "*";
-                continue;
-            }
             if (tileMap.at({x,y}) == nullptr)
             {
                 std::cout << ' ';
@@ -38,15 +32,13 @@ void print(const dungeon::TileMap& tileMap, const dungeon::Point& p)
 int main()
 {
     dungeon::DungeonOptions options;
-    options.addFeature(dungeon::corridor);
-    options.addFeature(dungeon::diamond);
-    options.addFeature(dungeon::octogon);
     options.addFeature(dungeon::rectangle);
-    options.addFeature(dungeon::trapezium);
-
-    // generate the dungeon
-    auto tileMap = dungeon::generate(options);
-    print(tileMap,{0,0});
+    options.iterations(20);
+    auto tileMap = dungeon::generate::classic(options);
+    print(tileMap);
+    options.iterations(10000);
+    auto tileMap2 = dungeon::generate::randomCaves(options);
+    print(tileMap2);
 
     return 0;
 }

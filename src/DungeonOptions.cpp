@@ -18,7 +18,7 @@ DungeonOptions::DungeonOptions() :
     mIntervals.push_back(0.0);
 }
 
-DungeonOptions& DungeonOptions::setSize(unsigned width, unsigned height)
+DungeonOptions& DungeonOptions::size(unsigned width, unsigned height)
 {
     mWidth = width;
     mHeight = height;
@@ -34,31 +34,31 @@ DungeonOptions& DungeonOptions::addFeature(FeatureFunction function,
     return *this;
 }
 
-DungeonOptions& DungeonOptions::setMinWidth(int width)
+DungeonOptions& DungeonOptions::minWidth(int width)
 {
     mMinW = width;
     return *this;
 }
 
-DungeonOptions& DungeonOptions::setMaxWidth(int width)
+DungeonOptions& DungeonOptions::maxWidth(int width)
 {
     mMaxW = width;
     return *this;
 }
 
-DungeonOptions& DungeonOptions::setMinHeight(int height)
+DungeonOptions& DungeonOptions::minHeight(int height)
 {
     mMinH = height;
     return *this;
 }
 
-DungeonOptions& DungeonOptions::setMaxHeight(int height)
+DungeonOptions& DungeonOptions::maxHeight(int height)
 {
     mMaxH = height;
     return *this;
 }
 
-DungeonOptions& DungeonOptions::setIterations(unsigned iterations)
+DungeonOptions& DungeonOptions::iterations(unsigned iterations)
 {
     mIterations = iterations;
     return *this;
