@@ -26,11 +26,12 @@ endif(DOXYGEN_FOUND)
 ################################
 # Locate source
 ################################
-file(GLOB_RECURSE INCLUDES include/*.h)
+file(GLOB_RECURSE INCLUDES include/)
 file(GLOB_RECURSE SRC src/*.cpp)
 file(GLOB_RECURSE TEST test/*.cpp)
 
 include_directories(include)
+include_directories(src)
 
 ################################
 # Build targets

@@ -1,5 +1,5 @@
-#ifndef DUNGEON_DUNGEONOPTIONS_H
-#define DUNGEON_DUNGEONOPTIONS_H
+#ifndef DUNGEON_FEATUREOPTIONS_H
+#define DUNGEON_FEATUREOPTIONS_H
 
 #include <functional>
 #include <vector>
@@ -8,7 +8,6 @@ namespace dungeon
 {
 
 class Feature;
-class TileMap;
 
 typedef std::function<Feature(int,int)> FeatureFunction;
 
@@ -16,22 +15,22 @@ typedef std::function<Feature(int,int)> FeatureFunction;
 /*!
  * Options for controlling the parameters of dungeon generation
  */
-class DungeonOptions
+class FeatureOptions
 {
 public:
-    DungeonOptions();
+    FeatureOptions();
 
     // setup
-    DungeonOptions& addFeature(FeatureFunction function, double weight = 1.0);
+    FeatureOptions& addFeature(FeatureFunction function, double weight = 1.0);
 
-    DungeonOptions& size(unsigned width, unsigned height);
+    FeatureOptions& size(unsigned width, unsigned height);
 
-    DungeonOptions& minWidth(int width);
-    DungeonOptions& maxWidth(int width);
-    DungeonOptions& minHeight(int height);
-    DungeonOptions& maxHeight(int height);
+    FeatureOptions& minWidth(int width);
+    FeatureOptions& maxWidth(int width);
+    FeatureOptions& minHeight(int height);
+    FeatureOptions& maxHeight(int height);
 
-    DungeonOptions& iterations(unsigned iterations);
+    FeatureOptions& iterations(unsigned iterations);
 
     Feature createRandom() const;
 

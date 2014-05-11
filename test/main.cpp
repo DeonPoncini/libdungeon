@@ -1,10 +1,11 @@
 #include <iostream>
 
-#include "FeatureIterator.h"
+#include "Feature.h"
 #include "Features.h"
 #include "TileMap.h"
-#include "Generator.h"
-#include "DungeonOptions.h"
+#include "MapGenerator.h"
+#include "FeatureOptions.h"
+#include "CellOptions.h"
 
 void print(const dungeon::TileMap& tileMap)
 {
@@ -31,21 +32,19 @@ void print(const dungeon::TileMap& tileMap)
 
 int main()
 {
-#if 0
-    dungeon::DungeonOptions options;
+    dungeon::FeatureOptions options;
     options.addFeature(dungeon::rectangle);
     options.addFeature(dungeon::octogon);
     options.addFeature(dungeon::trapezium);
     options.addFeature(dungeon::triangle);
     options.iterations(20);
-    auto tileMap = dungeon::generate::classic(options);
+    auto tileMap = dungeon::map::classic(options);
     print(tileMap);
     options.iterations(1000);
-    auto tileMap2 = dungeon::generate::randomCaves(options);
+    auto tileMap2 = dungeon::map::randomCaves(options);
     print(tileMap2);
-#endif
-    auto tileMap = dungeon::generate::conway();
-    print(tileMap);
+    auto tileMap3 = dungeon::map::conway(dungeon::CellOptions());
+    print(tileMap3);
 
     return 0;
 }

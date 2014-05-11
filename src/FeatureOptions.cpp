@@ -1,4 +1,4 @@
-#include "DungeonOptions.h"
+#include "FeatureOptions.h"
 
 #include "Feature.h"
 #include "Random.h"
@@ -6,7 +6,7 @@
 namespace dungeon
 {
 
-DungeonOptions::DungeonOptions() :
+FeatureOptions::FeatureOptions() :
     mWidth(100),
     mHeight(100),
     mMinW(4),
@@ -18,14 +18,14 @@ DungeonOptions::DungeonOptions() :
     mIntervals.push_back(0.0);
 }
 
-DungeonOptions& DungeonOptions::size(unsigned width, unsigned height)
+FeatureOptions& FeatureOptions::size(unsigned width, unsigned height)
 {
     mWidth = width;
     mHeight = height;
     return *this;
 }
 
-DungeonOptions& DungeonOptions::addFeature(FeatureFunction function,
+FeatureOptions& FeatureOptions::addFeature(FeatureFunction function,
         double weight)
 {
     mFeatures.emplace_back(function);
@@ -34,37 +34,37 @@ DungeonOptions& DungeonOptions::addFeature(FeatureFunction function,
     return *this;
 }
 
-DungeonOptions& DungeonOptions::minWidth(int width)
+FeatureOptions& FeatureOptions::minWidth(int width)
 {
     mMinW = width;
     return *this;
 }
 
-DungeonOptions& DungeonOptions::maxWidth(int width)
+FeatureOptions& FeatureOptions::maxWidth(int width)
 {
     mMaxW = width;
     return *this;
 }
 
-DungeonOptions& DungeonOptions::minHeight(int height)
+FeatureOptions& FeatureOptions::minHeight(int height)
 {
     mMinH = height;
     return *this;
 }
 
-DungeonOptions& DungeonOptions::maxHeight(int height)
+FeatureOptions& FeatureOptions::maxHeight(int height)
 {
     mMaxH = height;
     return *this;
 }
 
-DungeonOptions& DungeonOptions::iterations(unsigned iterations)
+FeatureOptions& FeatureOptions::iterations(unsigned iterations)
 {
     mIterations = iterations;
     return *this;
 }
 
-Feature DungeonOptions::createRandom() const
+Feature FeatureOptions::createRandom() const
 {
     // make up a random width and height
     auto w = randomRange(mMinW,mMaxW);
