@@ -12,6 +12,10 @@ class TileMap;
 
 typedef std::function<Feature(int,int)> FeatureFunction;
 
+//! Dungeon Options
+/*!
+ * Options for controlling the parameters of dungeon generation
+ */
 class DungeonOptions
 {
 public:
