@@ -50,7 +50,7 @@ public:
 
     const Feature* operator*() const;
 
-    Point transform(int x, int y) const;
+    Point transform(const Point& p) const;
 
 private:
     friend class RowIterator<FeatureIterator<A,I,Y,X,O>>;
@@ -162,9 +162,9 @@ template <typename A,
          template<typename> class Y,
          template<typename> class X,
          template<typename, typename> class O>
-Point FeatureIterator<A,I,Y,X,O>::transform(int x, int y) const
+Point FeatureIterator<A,I,Y,X,O>::transform(const Point& p) const
 {
-    return orientation(x,y);
+    return orientation(p.first,p.second);
 }
 
 template <typename A,
@@ -261,7 +261,7 @@ bool ColumnIterator<FI>::operator!=(const ColumnIterator<FI>& rhs) const
 template <typename FI>
 Point ColumnIterator<FI>::operator*() const
 {
-    return mRow.mFI.transform(mPos,mRow.mPos);
+    return {mPos,mRow.mPos};
 }
 
 template <typename FI>

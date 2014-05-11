@@ -2,6 +2,9 @@
 #define DUNGEON_FEATURE_H
 
 #include "Types.h"
+#include "Cell.h"
+
+#include <vector>
 
 namespace dungeon
 {
@@ -15,8 +18,12 @@ public:
     inline int offset(int row) const { return mEdges[row].first; }
     inline int width(int row) const { return mEdges[row].second; }
 
+    Cell at(const Point& p) const;
+
 private:
     EdgeList mEdges;
+    std::vector<Cell> mCells;
+    std::vector<int> mWidths;
 
 };
 

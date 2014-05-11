@@ -8,18 +8,18 @@ TileMap::TileMap(unsigned width, unsigned height) :
     mHeight(height),
     mSize(mWidth*mHeight),
     mStride(mWidth),
-    mTiles(mSize,nullptr)
+    mTiles(mSize,Cell())
 {
 }
 
-const Feature* TileMap::at(Point location) const
+Cell TileMap::at(Point location) const
 {
     return mTiles[index(location)];
 }
 
 bool TileMap::clear(Point location) const
 {
-    return bounds(location) && (mTiles[index(location)] == nullptr);
+    return bounds(location) && (!mTiles[index(location)].valid());
 }
 
 bool TileMap::bounds(Point location) const
@@ -36,9 +36,9 @@ int TileMap::index(Point location) const
     return location.second*mStride + location.first;
 }
 
-void TileMap::set(Point location, const Feature* feature)
+void TileMap::set(Point location, Cell cell)
 {
-    mTiles[index(location)] = feature;
+    mTiles[index(location)] = cell;
 }
 
 }

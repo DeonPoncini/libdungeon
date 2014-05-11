@@ -3,6 +3,7 @@
 
 #include "Types.h"
 #include "Feature.h"
+#include "Cell.h"
 
 namespace dungeon
 {
@@ -12,7 +13,8 @@ class TileMap
 public:
     TileMap(unsigned width, unsigned height);
 
-    const Feature* at(Point location) const;
+    Cell at(Point location) const;
+    void set(Point location, Cell cell);
 
     template <typename FI>
     bool insert(FI iterator);
@@ -29,7 +31,7 @@ private:
     unsigned mSize;
     unsigned mStride;
 
-    std::vector<const Feature*> mTiles;
+    std::vector<Cell> mTiles;
 
     bool bounds(Point location) const;
 
@@ -37,7 +39,6 @@ private:
     bool isClear(FI iterator);
 
     int index(Point location) const;
-    void set(Point location, const Feature* feature);
 
 };
 
@@ -60,7 +61,8 @@ void TileMap::forceInsert(FI iterator)
     {
         for (auto&& point : row)
         {
-            set(point,*iterator);
+            set(iterator.transform(point),
+                    (*iterator)->at(point));
         }
     }
 }
@@ -72,7 +74,7 @@ bool TileMap::isClear(FI iterator)
     {
         for (auto&& point : row)
         {
-            if (!clear(point))
+            if (!clear(iterator.transform(point)))
             {
                 return false;
             }

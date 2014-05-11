@@ -25,7 +25,7 @@ bool insert(TileMap& tileMap, const Feature& feature,
     if(tileMap.insert(r))
     {
         features.push_back(feature);
-        transforms.push_back([=](int x, int y) { return r.transform(x,y); });
+        transforms.push_back([=](int x, int y) { return r.transform({x,y}); });
         return true;
     }
     return false;
@@ -108,7 +108,7 @@ TileMap randomCaves(const DungeonOptions& options)
     auto rect = rectangle(4,4);
     features.push_back(rect);
     RF r(rect,{width/2,height/2});
-    transforms.push_back([=](int x, int y) { return r.transform(x,y); });
+    transforms.push_back([=](int x, int y) { return r.transform({x,y}); });
     tileMap.insert(r);
 
     // iterate a large number of times
