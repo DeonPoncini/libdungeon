@@ -19,6 +19,12 @@ int randomRange(int start, int end)
     return dist(generator());
 }
 
+float randomRange(float start, float end)
+{
+    std::uniform_real_distribution<> dist(start,end);
+    return dist(generator());
+}
+
 int weightedRoll(const std::vector<double>& intervals,
         const std::vector<double>& weights)
 {

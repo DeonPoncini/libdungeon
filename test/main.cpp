@@ -31,6 +31,7 @@ void print(const dungeon::TileMap& tileMap)
 
 int main()
 {
+#if 0
     dungeon::DungeonOptions options;
     options.addFeature(dungeon::rectangle);
     options.addFeature(dungeon::octogon);
@@ -42,6 +43,9 @@ int main()
     options.iterations(1000);
     auto tileMap2 = dungeon::generate::randomCaves(options);
     print(tileMap2);
+#endif
+    auto tileMap = dungeon::generate::conway();
+    print(tileMap);
 
     return 0;
 }

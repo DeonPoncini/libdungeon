@@ -61,8 +61,7 @@ void TileMap::forceInsert(FI iterator)
     {
         for (auto&& point : row)
         {
-            set(iterator.transform(point),
-                    (*iterator)->at(point));
+            set(iterator.transform(point), (*iterator)->at(point));
         }
     }
 }

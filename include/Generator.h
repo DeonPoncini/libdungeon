@@ -13,6 +13,8 @@ TileMap classic(const DungeonOptions& options);
 
 TileMap randomCaves(const DungeonOptions& options);
 
+TileMap conway();
+
 }
 }
 

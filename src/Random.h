@@ -8,6 +8,7 @@ namespace dungeon
 class Feature;
 
 int randomRange(int start, int end);
+float randomRange(float start, float end);
 int weightedRoll(const std::vector<double>& intervals,
         const std::vector<double>& weights);
 
