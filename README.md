@@ -18,9 +18,10 @@ Description
 -----------
 A library for generating dungeon maps. Currently supports three generation
 modes:
-+Classic: random rectangular rooms joined by corridors
-+Conway: cellular automata generation based on the game of life
-+RandomCaves: Random polygonal rooms that fill the space available
+
+* Classic: random rectangular rooms joined by corridors
+* Conway: cellular automata generation based on the game of life
+* RandomCaves: Random polygonal rooms that fill the space available
 
 Building
 --------
